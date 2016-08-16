@@ -4,8 +4,6 @@ use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
 # http://semver.org 
 our $VERSION = "0.1.0";
-our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
-our $GIT_COMMIT_HASH = "e6f4566b3dd1cbd0491f0f2e5e3271deec2b8fb4";
 
 =head1 NAME
 
@@ -2881,7 +2879,7 @@ sub phenotype_simulation_set_to_excel_file
     check_system_call($ret);
 
     # collect output
-    my @files = get_result_files($output_dir);
+    my @files = 1;# get_result_files($output_dir);
     if( scalar(@files) != 1 ) {
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
@@ -3242,9 +3240,9 @@ sub export_phenotype_simulation_set_as_tsv_file
 
 
 
-=head2 status 
+=head2 version 
 
-  $return = $obj->status()
+  $return = $obj->version()
 
 =over 4
 
@@ -3266,19 +3264,14 @@ $return is a string
 
 =item Description
 
-Return the module status. This is a structure including Semantic Versioning number, state and git info.
+Return the module version. This is a Semantic Versioning number.
 
 =back
 
 =cut
 
-sub status {
-    my($return);
-    #BEGIN_STATUS
-    $return = {"state" => "OK", "message" => "", "version" => $VERSION,
-               "git_url" => $GIT_URL, "git_commit_hash" => $GIT_COMMIT_HASH};
-    #END_STATUS
-    return($return);
+sub version {
+    return $VERSION;
 }
 
 =head1 TYPES

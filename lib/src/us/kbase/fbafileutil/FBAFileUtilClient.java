@@ -19,7 +19,6 @@ import us.kbase.common.service.UnauthorizedException;
  */
 public class FBAFileUtilClient {
     private JsonClientCaller caller;
-    private String serviceVersion = null;
 
 
     /** Constructs a client with a custom URL and no user credentials.
@@ -138,14 +137,6 @@ public class FBAFileUtilClient {
         caller.setFileForNextRpcResponse(f);
     }
 
-    public String getServiceVersion() {
-        return this.serviceVersion;
-    }
-
-    public void setServiceVersion(String newValue) {
-        this.serviceVersion = newValue;
-    }
-
     /**
      * <p>Original spec-file function name: excel_file_to_model</p>
      * <pre>
@@ -159,7 +150,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.excel_file_to_model", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.excel_file_to_model", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -176,7 +167,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.sbml_file_to_model", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.sbml_file_to_model", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -193,7 +184,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_model", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_model", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -210,7 +201,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(model);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.model_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.model_to_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -227,7 +218,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(model);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.model_to_sbml_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.model_to_sbml_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -244,7 +235,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(model);
         TypeReference<List<ModelTsvFiles>> retType = new TypeReference<List<ModelTsvFiles>>() {};
-        List<ModelTsvFiles> res = caller.jsonrpcCall("FBAFileUtil.model_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ModelTsvFiles> res = caller.jsonrpcCall("FBAFileUtil.model_to_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -261,7 +252,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -278,7 +269,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -295,7 +286,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_sbml_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_sbml_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -312,7 +303,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(fba);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.fba_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.fba_to_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -329,7 +320,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(fba);
         TypeReference<List<FBATsvFiles>> retType = new TypeReference<List<FBATsvFiles>>() {};
-        List<FBATsvFiles> res = caller.jsonrpcCall("FBAFileUtil.fba_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<FBATsvFiles> res = caller.jsonrpcCall("FBAFileUtil.fba_to_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -346,7 +337,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -363,7 +354,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -380,7 +371,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_media", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_media", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -397,7 +388,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.excel_file_to_media", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.excel_file_to_media", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -414,7 +405,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(media);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.media_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.media_to_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -431,7 +422,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(media);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.media_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.media_to_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -448,7 +439,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -465,7 +456,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -482,7 +473,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
-        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_phenotype_set", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<WorkspaceRef> res = caller.jsonrpcCall("FBAFileUtil.tsv_file_to_phenotype_set", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -499,7 +490,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(phenotypeSet);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_set_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_set_to_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -516,7 +507,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_set_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_set_as_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -533,7 +524,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -550,7 +541,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -567,7 +558,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_excel_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 
@@ -584,7 +575,7 @@ public class FBAFileUtilClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
-        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_tsv_file", args, retType, true, true, jsonRpcContext);
         return res.get(0);
     }
 }

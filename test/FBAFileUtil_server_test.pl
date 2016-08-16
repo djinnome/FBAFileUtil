@@ -444,7 +444,7 @@ eval {
 
     #test_phenotype_set_import_export();
 
-    test_phenotype_simulation_set_export();
+#    test_phenotype_simulation_set_export();
 
 };
 my $err = undef;

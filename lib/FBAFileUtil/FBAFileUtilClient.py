@@ -5,386 +5,351 @@
 #
 ############################################################
 
-from __future__ import print_function
-# the following is a hack to get the baseclient to import whether we're in a
-# package or not. This makes pep8 unhappy hence the annotations.
 try:
-    # baseclient and this client are in a package
-    from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
-    # no they aren't
-    from baseclient import BaseClient as _BaseClient  # @Reimport
+    import json as _json
+except ImportError:
+    import sys
+    sys.path.append('simplejson-2.3.3')
+    import simplejson as _json
+
+import requests as _requests
+import urlparse as _urlparse
+import random as _random
+import base64 as _base64
+from ConfigParser import ConfigParser as _ConfigParser
+import os as _os
+
+_CT = 'content-type'
+_AJ = 'application/json'
+_URL_SCHEME = frozenset(['http', 'https'])
+
+
+def _get_token(user_id, password,
+               auth_svc='https://nexus.api.globusonline.org/goauth/token?' +
+                        'grant_type=client_credentials'):
+    # This is bandaid helper function until we get a full
+    # KBase python auth client released
+    auth = _base64.encodestring(user_id + ':' + password)
+    headers = {'Authorization': 'Basic ' + auth}
+    ret = _requests.get(auth_svc, headers=headers, allow_redirects=True)
+    status = ret.status_code
+    if status >= 200 and status <= 299:
+        tok = _json.loads(ret.text)
+    elif status == 403:
+        raise Exception('Authentication failed: Bad user_id/password ' +
+                        'combination for user %s' % (user_id))
+    else:
+        raise Exception(ret.text)
+    return tok['access_token']
+
+
+def _read_rcfile(file=_os.environ['HOME'] + '/.authrc'):  # @ReservedAssignment
+    # Another bandaid to read in the ~/.authrc file if one is present
+    authdata = None
+    if _os.path.exists(file):
+        try:
+            with open(file) as authrc:
+                rawdata = _json.load(authrc)
+                # strip down whatever we read to only what is legit
+                authdata = {x: rawdata.get(x) for x in (
+                    'user_id', 'token', 'client_secret', 'keyfile',
+                    'keyfile_passphrase', 'password')}
+        except Exception, e:
+            print "Error while reading authrc file %s: %s" % (file, e)
+    return authdata
+
+
+def _read_inifile(file=_os.environ.get(  # @ReservedAssignment
+                  'KB_DEPLOYMENT_CONFIG', _os.environ['HOME'] +
+                  '/.kbase_config')):
+    # Another bandaid to read in the ~/.kbase_config file if one is present
+    authdata = None
+    if _os.path.exists(file):
+        try:
+            config = _ConfigParser()
+            config.read(file)
+            # strip down whatever we read to only what is legit
+            authdata = {x: config.get('authentication', x)
+                        if config.has_option('authentication', x)
+                        else None for x in ('user_id', 'token',
+                                            'client_secret', 'keyfile',
+                                            'keyfile_passphrase', 'password')}
+        except Exception, e:
+            print "Error while reading INI file %s: %s" % (file, e)
+    return authdata
+
+
+class ServerError(Exception):
+
+    def __init__(self, name, code, message, data=None, error=None):
+        self.name = name
+        self.code = code
+        self.message = '' if message is None else message
+        self.data = data or error or ''
+        # data = JSON RPC 2.0, error = 1.1
+
+    def __str__(self):
+        return self.name + ': ' + str(self.code) + '. ' + self.message + \
+            '\n' + self.data
+
+
+class _JSONObjectEncoder(_json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, frozenset):
+            return list(obj)
+        return _json.JSONEncoder.default(self, obj)
 
 
 class FBAFileUtil(object):
 
-    def __init__(
-            self, url=None, timeout=30 * 60, user_id=None,
-            password=None, token=None, ignore_authrc=False,
-            trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+    def __init__(self, url=None, timeout=30 * 60, user_id=None,
+                 password=None, token=None, ignore_authrc=False,
+                 trust_all_ssl_certificates=False):
         if url is None:
             raise ValueError('A url is required')
-        self._service_ver = None
-        self._client = _BaseClient(
-            url, timeout=timeout, user_id=user_id, password=password,
-            token=token, ignore_authrc=ignore_authrc,
-            trust_all_ssl_certificates=trust_all_ssl_certificates,
-            auth_svc=auth_svc)
+        scheme, _, _, _, _, _ = _urlparse.urlparse(url)
+        if scheme not in _URL_SCHEME:
+            raise ValueError(url + " isn't a valid http url")
+        self.url = url
+        self.timeout = int(timeout)
+        self._headers = dict()
+        self.trust_all_ssl_certificates = trust_all_ssl_certificates
+        # token overrides user_id and password
+        if token is not None:
+            self._headers['AUTHORIZATION'] = token
+        elif user_id is not None and password is not None:
+            self._headers['AUTHORIZATION'] = _get_token(user_id, password)
+        elif 'KB_AUTH_TOKEN' in _os.environ:
+            self._headers['AUTHORIZATION'] = _os.environ.get('KB_AUTH_TOKEN')
+        elif not ignore_authrc:
+            authdata = _read_inifile()
+            if authdata is None:
+                authdata = _read_rcfile()
+            if authdata is not None:
+                if authdata.get('token') is not None:
+                    self._headers['AUTHORIZATION'] = authdata['token']
+                elif(authdata.get('user_id') is not None
+                     and authdata.get('password') is not None):
+                    self._headers['AUTHORIZATION'] = _get_token(
+                        authdata['user_id'], authdata['password'])
+        if self.timeout < 1:
+            raise ValueError('Timeout value must be at least 1 second')
 
-    def excel_file_to_model(self, p, context=None):
-        """
-        :param p: instance of type "ModelCreationParams" (compounds_file is
-           not used for excel file creations) -> structure: parameter
-           "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String, parameter "model_name" of
-           String, parameter "workspace_name" of String, parameter "genome"
-           of String, parameter "biomass" of list of String, parameter
-           "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.excel_file_to_model',
-            [p], self._service_ver, context)
+    def _call(self, method, params, json_rpc_context = None):
+        arg_hash = {'method': method,
+                    'params': params,
+                    'version': '1.1',
+                    'id': str(_random.random())[2:]
+                    }
+        if json_rpc_context:
+            arg_hash['context'] = json_rpc_context
 
-    def sbml_file_to_model(self, p, context=None):
-        """
-        :param p: instance of type "ModelCreationParams" (compounds_file is
-           not used for excel file creations) -> structure: parameter
-           "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String, parameter "model_name" of
-           String, parameter "workspace_name" of String, parameter "genome"
-           of String, parameter "biomass" of list of String, parameter
-           "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.sbml_file_to_model',
-            [p], self._service_ver, context)
-
-    def tsv_file_to_model(self, p, context=None):
-        """
-        :param p: instance of type "ModelCreationParams" (compounds_file is
-           not used for excel file creations) -> structure: parameter
-           "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String, parameter "model_name" of
-           String, parameter "workspace_name" of String, parameter "genome"
-           of String, parameter "biomass" of list of String, parameter
-           "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.tsv_file_to_model',
-            [p], self._service_ver, context)
-
-    def model_to_excel_file(self, model, context=None):
-        """
-        :param model: instance of type "ModelObjectSelectionParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "model_name" of String, parameter "save_to_shock" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.model_to_excel_file',
-            [model], self._service_ver, context)
-
-    def model_to_sbml_file(self, model, context=None):
-        """
-        :param model: instance of type "ModelObjectSelectionParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "model_name" of String, parameter "save_to_shock" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.model_to_sbml_file',
-            [model], self._service_ver, context)
-
-    def model_to_tsv_file(self, model, context=None):
-        """
-        :param model: instance of type "ModelObjectSelectionParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "model_name" of String, parameter "save_to_shock" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "ModelTsvFiles" -> structure: parameter
-           "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String, parameter "reactions_file"
-           of type "File" -> structure: parameter "path" of String, parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.model_to_tsv_file',
-            [model], self._service_ver, context)
-
-    def export_model_as_excel_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_model_as_excel_file',
-            [params], self._service_ver, context)
-
-    def export_model_as_tsv_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_model_as_tsv_file',
-            [params], self._service_ver, context)
-
-    def export_model_as_sbml_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_model_as_sbml_file',
-            [params], self._service_ver, context)
-
-    def fba_to_excel_file(self, fba, context=None):
-        """
-        :param fba: instance of type "FBAObjectSelectionParams" (****** FBA
-           Result Converters ******) -> structure: parameter "workspace_name"
-           of String, parameter "fba_name" of String, parameter
-           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.fba_to_excel_file',
-            [fba], self._service_ver, context)
-
-    def fba_to_tsv_file(self, fba, context=None):
-        """
-        :param fba: instance of type "FBAObjectSelectionParams" (****** FBA
-           Result Converters ******) -> structure: parameter "workspace_name"
-           of String, parameter "fba_name" of String, parameter
-           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
-        :returns: instance of type "FBATsvFiles" -> structure: parameter
-           "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String, parameter "reactions_file"
-           of type "File" -> structure: parameter "path" of String, parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.fba_to_tsv_file',
-            [fba], self._service_ver, context)
-
-    def export_fba_as_excel_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_fba_as_excel_file',
-            [params], self._service_ver, context)
-
-    def export_fba_as_tsv_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_fba_as_tsv_file',
-            [params], self._service_ver, context)
-
-    def tsv_file_to_media(self, p, context=None):
-        """
-        :param p: instance of type "MediaCreationParams" (****** Media
-           Converters *********) -> structure: parameter "media_file" of type
-           "File" -> structure: parameter "path" of String, parameter
-           "shock_id" of String, parameter "media_name" of String, parameter
-           "workspace_name" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.tsv_file_to_media',
-            [p], self._service_ver, context)
-
-    def excel_file_to_media(self, p, context=None):
-        """
-        :param p: instance of type "MediaCreationParams" (****** Media
-           Converters *********) -> structure: parameter "media_file" of type
-           "File" -> structure: parameter "path" of String, parameter
-           "shock_id" of String, parameter "media_name" of String, parameter
-           "workspace_name" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.excel_file_to_media',
-            [p], self._service_ver, context)
-
-    def media_to_tsv_file(self, media, context=None):
-        """
-        :param media: instance of type "MediaObjectSelectionParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "media_name" of String, parameter "save_to_shock" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.media_to_tsv_file',
-            [media], self._service_ver, context)
-
-    def media_to_excel_file(self, media, context=None):
-        """
-        :param media: instance of type "MediaObjectSelectionParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "media_name" of String, parameter "save_to_shock" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.media_to_excel_file',
-            [media], self._service_ver, context)
-
-    def export_media_as_excel_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_media_as_excel_file',
-            [params], self._service_ver, context)
-
-    def export_media_as_tsv_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_media_as_tsv_file',
-            [params], self._service_ver, context)
-
-    def tsv_file_to_phenotype_set(self, p, context=None):
-        """
-        :param p: instance of type "PhenotypeSetCreationParams" (******
-           Phenotype Data Converters *******) -> structure: parameter
-           "phenotype_set_file" of type "File" -> structure: parameter "path"
-           of String, parameter "shock_id" of String, parameter
-           "phenotype_set_name" of String, parameter "workspace_name" of
-           String, parameter "genome" of String
-        :returns: instance of type "WorkspaceRef" -> structure: parameter
-           "ref" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.tsv_file_to_phenotype_set',
-            [p], self._service_ver, context)
-
-    def phenotype_set_to_tsv_file(self, phenotype_set, context=None):
-        """
-        :param phenotype_set: instance of type
-           "PhenotypeSetObjectSelectionParams" -> structure: parameter
-           "workspace_name" of String, parameter "phenotype_set_name" of
-           String, parameter "save_to_shock" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.phenotype_set_to_tsv_file',
-            [phenotype_set], self._service_ver, context)
-
-    def export_phenotype_set_as_tsv_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_phenotype_set_as_tsv_file',
-            [params], self._service_ver, context)
-
-    def phenotype_simulation_set_to_excel_file(self, pss, context=None):
-        """
-        :param pss: instance of type
-           "PhenotypeSimulationSetObjectSelectionParams" -> structure:
-           parameter "workspace_name" of String, parameter
-           "phenotype_simulation_set_name" of String, parameter
-           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.phenotype_simulation_set_to_excel_file',
-            [pss], self._service_ver, context)
-
-    def phenotype_simulation_set_to_tsv_file(self, pss, context=None):
-        """
-        :param pss: instance of type
-           "PhenotypeSimulationSetObjectSelectionParams" -> structure:
-           parameter "workspace_name" of String, parameter
-           "phenotype_simulation_set_name" of String, parameter
-           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String, parameter "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.phenotype_simulation_set_to_tsv_file',
-            [pss], self._service_ver, context)
-
-    def export_phenotype_simulation_set_as_excel_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_phenotype_simulation_set_as_excel_file',
-            [params], self._service_ver, context)
-
-    def export_phenotype_simulation_set_as_tsv_file(self, params, context=None):
-        """
-        :param params: instance of type "ExportParams" (input and output
-           structure functions for standard downloaders) -> structure:
-           parameter "input_ref" of String
-        :returns: instance of type "ExportOutput" -> structure: parameter
-           "shock_id" of String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.export_phenotype_simulation_set_as_tsv_file',
-            [params], self._service_ver, context)
+        body = _json.dumps(arg_hash, cls=_JSONObjectEncoder)
+        ret = _requests.post(self.url, data=body, headers=self._headers,
+                             timeout=self.timeout,
+                             verify=not self.trust_all_ssl_certificates)
+        if ret.status_code == _requests.codes.server_error:
+            json_header = None
+            if _CT in ret.headers:
+                json_header = ret.headers[_CT]
+            if _CT in ret.headers and ret.headers[_CT] == _AJ:
+                err = _json.loads(ret.text)
+                if 'error' in err:
+                    raise ServerError(**err['error'])
+                else:
+                    raise ServerError('Unknown', 0, ret.text)
+            else:
+                raise ServerError('Unknown', 0, ret.text)
+        if ret.status_code != _requests.codes.OK:
+            ret.raise_for_status()
+        ret.encoding = 'utf-8'
+        resp = _json.loads(ret.text)
+        if 'result' not in resp:
+            raise ServerError('Unknown', 0, 'An unknown server error occurred')
+        return resp['result']
+ 
+    def excel_file_to_model(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method excel_file_to_model: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.excel_file_to_model',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def sbml_file_to_model(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method sbml_file_to_model: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.sbml_file_to_model',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def tsv_file_to_model(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method tsv_file_to_model: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.tsv_file_to_model',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def model_to_excel_file(self, model, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method model_to_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.model_to_excel_file',
+                          [model], json_rpc_context)
+        return resp[0]
+  
+    def model_to_sbml_file(self, model, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method model_to_sbml_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.model_to_sbml_file',
+                          [model], json_rpc_context)
+        return resp[0]
+  
+    def model_to_tsv_file(self, model, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method model_to_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.model_to_tsv_file',
+                          [model], json_rpc_context)
+        return resp[0]
+  
+    def export_model_as_excel_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_model_as_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_model_as_excel_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def export_model_as_tsv_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_model_as_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_model_as_tsv_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def export_model_as_sbml_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_model_as_sbml_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_model_as_sbml_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def fba_to_excel_file(self, fba, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method fba_to_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.fba_to_excel_file',
+                          [fba], json_rpc_context)
+        return resp[0]
+  
+    def fba_to_tsv_file(self, fba, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method fba_to_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.fba_to_tsv_file',
+                          [fba], json_rpc_context)
+        return resp[0]
+  
+    def export_fba_as_excel_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_fba_as_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_fba_as_excel_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def export_fba_as_tsv_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_fba_as_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_fba_as_tsv_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def tsv_file_to_media(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method tsv_file_to_media: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.tsv_file_to_media',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def excel_file_to_media(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method excel_file_to_media: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.excel_file_to_media',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def media_to_tsv_file(self, media, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method media_to_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.media_to_tsv_file',
+                          [media], json_rpc_context)
+        return resp[0]
+  
+    def media_to_excel_file(self, media, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method media_to_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.media_to_excel_file',
+                          [media], json_rpc_context)
+        return resp[0]
+  
+    def export_media_as_excel_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_media_as_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_media_as_excel_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def export_media_as_tsv_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_media_as_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_media_as_tsv_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def tsv_file_to_phenotype_set(self, p, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method tsv_file_to_phenotype_set: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.tsv_file_to_phenotype_set',
+                          [p], json_rpc_context)
+        return resp[0]
+  
+    def phenotype_set_to_tsv_file(self, phenotype_set, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method phenotype_set_to_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.phenotype_set_to_tsv_file',
+                          [phenotype_set], json_rpc_context)
+        return resp[0]
+  
+    def export_phenotype_set_as_tsv_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_phenotype_set_as_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_phenotype_set_as_tsv_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def phenotype_simulation_set_to_excel_file(self, pss, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method phenotype_simulation_set_to_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.phenotype_simulation_set_to_excel_file',
+                          [pss], json_rpc_context)
+        return resp[0]
+  
+    def phenotype_simulation_set_to_tsv_file(self, pss, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method phenotype_simulation_set_to_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.phenotype_simulation_set_to_tsv_file',
+                          [pss], json_rpc_context)
+        return resp[0]
+  
+    def export_phenotype_simulation_set_as_excel_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_phenotype_simulation_set_as_excel_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_phenotype_simulation_set_as_excel_file',
+                          [params], json_rpc_context)
+        return resp[0]
+  
+    def export_phenotype_simulation_set_as_tsv_file(self, params, json_rpc_context = None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method export_phenotype_simulation_set_as_tsv_file: argument json_rpc_context is not type dict as required.')
+        resp = self._call('FBAFileUtil.export_phenotype_simulation_set_as_tsv_file',
+                          [params], json_rpc_context)
+        return resp[0]
+ 

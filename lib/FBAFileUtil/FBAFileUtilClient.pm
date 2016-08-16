@@ -190,10 +190,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.excel_file_to_model",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.excel_file_to_model",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -296,10 +295,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.sbml_file_to_model",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.sbml_file_to_model",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -402,10 +400,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.tsv_file_to_model",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.tsv_file_to_model",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -500,10 +497,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.model_to_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.model_to_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -598,10 +594,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.model_to_sbml_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.model_to_sbml_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -702,10 +697,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.model_to_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.model_to_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -792,10 +786,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_model_as_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_model_as_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -882,10 +875,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_model_as_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_model_as_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -972,10 +964,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_model_as_sbml_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_model_as_sbml_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1070,10 +1061,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.fba_to_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.fba_to_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1174,10 +1164,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.fba_to_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.fba_to_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1264,10 +1253,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_fba_as_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_fba_as_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1354,10 +1342,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_fba_as_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_fba_as_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1454,10 +1441,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.tsv_file_to_media",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.tsv_file_to_media",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1554,10 +1540,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.excel_file_to_media",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.excel_file_to_media",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1652,10 +1637,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.media_to_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.media_to_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1750,10 +1734,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.media_to_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.media_to_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1840,10 +1823,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_media_as_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_media_as_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1930,10 +1912,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_media_as_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_media_as_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2032,10 +2013,9 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.tsv_file_to_phenotype_set",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.tsv_file_to_phenotype_set",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2130,10 +2110,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.phenotype_set_to_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.phenotype_set_to_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2220,10 +2199,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_phenotype_set_as_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_phenotype_set_as_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2318,10 +2296,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.phenotype_simulation_set_to_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.phenotype_simulation_set_to_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2416,10 +2393,9 @@ File is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.phenotype_simulation_set_to_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.phenotype_simulation_set_to_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2506,10 +2482,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_phenotype_simulation_set_as_excel_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_phenotype_simulation_set_as_excel_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2596,10 +2571,9 @@ ExportOutput is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.export_phenotype_simulation_set_as_tsv_file",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "FBAFileUtil.export_phenotype_simulation_set_as_tsv_file",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {

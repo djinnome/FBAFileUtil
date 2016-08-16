@@ -29,67 +29,168 @@ our $CallContext;
 
 our %return_counts = (
         'excel_file_to_model' => 1,
+        'excel_file_to_model_async' => 1,
+        'excel_file_to_model_check' => 1,
         'sbml_file_to_model' => 1,
+        'sbml_file_to_model_async' => 1,
+        'sbml_file_to_model_check' => 1,
         'tsv_file_to_model' => 1,
+        'tsv_file_to_model_async' => 1,
+        'tsv_file_to_model_check' => 1,
         'model_to_excel_file' => 1,
+        'model_to_excel_file_async' => 1,
+        'model_to_excel_file_check' => 1,
         'model_to_sbml_file' => 1,
+        'model_to_sbml_file_async' => 1,
+        'model_to_sbml_file_check' => 1,
         'model_to_tsv_file' => 1,
+        'model_to_tsv_file_async' => 1,
+        'model_to_tsv_file_check' => 1,
         'export_model_as_excel_file' => 1,
+        'export_model_as_excel_file_async' => 1,
+        'export_model_as_excel_file_check' => 1,
         'export_model_as_tsv_file' => 1,
+        'export_model_as_tsv_file_async' => 1,
+        'export_model_as_tsv_file_check' => 1,
         'export_model_as_sbml_file' => 1,
+        'export_model_as_sbml_file_async' => 1,
+        'export_model_as_sbml_file_check' => 1,
         'fba_to_excel_file' => 1,
+        'fba_to_excel_file_async' => 1,
+        'fba_to_excel_file_check' => 1,
         'fba_to_tsv_file' => 1,
+        'fba_to_tsv_file_async' => 1,
+        'fba_to_tsv_file_check' => 1,
         'export_fba_as_excel_file' => 1,
+        'export_fba_as_excel_file_async' => 1,
+        'export_fba_as_excel_file_check' => 1,
         'export_fba_as_tsv_file' => 1,
+        'export_fba_as_tsv_file_async' => 1,
+        'export_fba_as_tsv_file_check' => 1,
         'tsv_file_to_media' => 1,
+        'tsv_file_to_media_async' => 1,
+        'tsv_file_to_media_check' => 1,
         'excel_file_to_media' => 1,
+        'excel_file_to_media_async' => 1,
+        'excel_file_to_media_check' => 1,
         'media_to_tsv_file' => 1,
+        'media_to_tsv_file_async' => 1,
+        'media_to_tsv_file_check' => 1,
         'media_to_excel_file' => 1,
+        'media_to_excel_file_async' => 1,
+        'media_to_excel_file_check' => 1,
         'export_media_as_excel_file' => 1,
+        'export_media_as_excel_file_async' => 1,
+        'export_media_as_excel_file_check' => 1,
         'export_media_as_tsv_file' => 1,
+        'export_media_as_tsv_file_async' => 1,
+        'export_media_as_tsv_file_check' => 1,
         'tsv_file_to_phenotype_set' => 1,
+        'tsv_file_to_phenotype_set_async' => 1,
+        'tsv_file_to_phenotype_set_check' => 1,
         'phenotype_set_to_tsv_file' => 1,
+        'phenotype_set_to_tsv_file_async' => 1,
+        'phenotype_set_to_tsv_file_check' => 1,
         'export_phenotype_set_as_tsv_file' => 1,
+        'export_phenotype_set_as_tsv_file_async' => 1,
+        'export_phenotype_set_as_tsv_file_check' => 1,
         'phenotype_simulation_set_to_excel_file' => 1,
+        'phenotype_simulation_set_to_excel_file_async' => 1,
+        'phenotype_simulation_set_to_excel_file_check' => 1,
         'phenotype_simulation_set_to_tsv_file' => 1,
+        'phenotype_simulation_set_to_tsv_file_async' => 1,
+        'phenotype_simulation_set_to_tsv_file_check' => 1,
         'export_phenotype_simulation_set_as_excel_file' => 1,
+        'export_phenotype_simulation_set_as_excel_file_async' => 1,
+        'export_phenotype_simulation_set_as_excel_file_check' => 1,
         'export_phenotype_simulation_set_as_tsv_file' => 1,
-        'status' => 1,
+        'export_phenotype_simulation_set_as_tsv_file_async' => 1,
+        'export_phenotype_simulation_set_as_tsv_file_check' => 1,
+        'version' => 1,
 );
 
 our %method_authentication = (
         'excel_file_to_model' => 'required',
+        'excel_file_to_model_async' => 'required',
+        'excel_file_to_model_check' => 'required',
         'sbml_file_to_model' => 'required',
+        'sbml_file_to_model_async' => 'required',
+        'sbml_file_to_model_check' => 'required',
         'tsv_file_to_model' => 'required',
+        'tsv_file_to_model_async' => 'required',
+        'tsv_file_to_model_check' => 'required',
         'model_to_excel_file' => 'required',
+        'model_to_excel_file_async' => 'required',
+        'model_to_excel_file_check' => 'required',
         'model_to_sbml_file' => 'required',
+        'model_to_sbml_file_async' => 'required',
+        'model_to_sbml_file_check' => 'required',
         'model_to_tsv_file' => 'required',
+        'model_to_tsv_file_async' => 'required',
+        'model_to_tsv_file_check' => 'required',
         'export_model_as_excel_file' => 'required',
+        'export_model_as_excel_file_async' => 'required',
+        'export_model_as_excel_file_check' => 'required',
         'export_model_as_tsv_file' => 'required',
+        'export_model_as_tsv_file_async' => 'required',
+        'export_model_as_tsv_file_check' => 'required',
         'export_model_as_sbml_file' => 'required',
+        'export_model_as_sbml_file_async' => 'required',
+        'export_model_as_sbml_file_check' => 'required',
         'fba_to_excel_file' => 'required',
+        'fba_to_excel_file_async' => 'required',
+        'fba_to_excel_file_check' => 'required',
         'fba_to_tsv_file' => 'required',
+        'fba_to_tsv_file_async' => 'required',
+        'fba_to_tsv_file_check' => 'required',
         'export_fba_as_excel_file' => 'required',
+        'export_fba_as_excel_file_async' => 'required',
+        'export_fba_as_excel_file_check' => 'required',
         'export_fba_as_tsv_file' => 'required',
+        'export_fba_as_tsv_file_async' => 'required',
+        'export_fba_as_tsv_file_check' => 'required',
         'tsv_file_to_media' => 'required',
+        'tsv_file_to_media_async' => 'required',
+        'tsv_file_to_media_check' => 'required',
         'excel_file_to_media' => 'required',
+        'excel_file_to_media_async' => 'required',
+        'excel_file_to_media_check' => 'required',
         'media_to_tsv_file' => 'required',
+        'media_to_tsv_file_async' => 'required',
+        'media_to_tsv_file_check' => 'required',
         'media_to_excel_file' => 'required',
+        'media_to_excel_file_async' => 'required',
+        'media_to_excel_file_check' => 'required',
         'export_media_as_excel_file' => 'required',
+        'export_media_as_excel_file_async' => 'required',
+        'export_media_as_excel_file_check' => 'required',
         'export_media_as_tsv_file' => 'required',
+        'export_media_as_tsv_file_async' => 'required',
+        'export_media_as_tsv_file_check' => 'required',
         'tsv_file_to_phenotype_set' => 'required',
+        'tsv_file_to_phenotype_set_async' => 'required',
+        'tsv_file_to_phenotype_set_check' => 'required',
         'phenotype_set_to_tsv_file' => 'required',
+        'phenotype_set_to_tsv_file_async' => 'required',
+        'phenotype_set_to_tsv_file_check' => 'required',
         'export_phenotype_set_as_tsv_file' => 'required',
+        'export_phenotype_set_as_tsv_file_async' => 'required',
+        'export_phenotype_set_as_tsv_file_check' => 'required',
         'phenotype_simulation_set_to_excel_file' => 'required',
+        'phenotype_simulation_set_to_excel_file_async' => 'required',
+        'phenotype_simulation_set_to_excel_file_check' => 'required',
         'phenotype_simulation_set_to_tsv_file' => 'required',
+        'phenotype_simulation_set_to_tsv_file_async' => 'required',
+        'phenotype_simulation_set_to_tsv_file_check' => 'required',
         'export_phenotype_simulation_set_as_excel_file' => 'required',
+        'export_phenotype_simulation_set_as_excel_file_async' => 'required',
+        'export_phenotype_simulation_set_as_excel_file_check' => 'required',
         'export_phenotype_simulation_set_as_tsv_file' => 'required',
+        'export_phenotype_simulation_set_as_tsv_file_async' => 'required',
+        'export_phenotype_simulation_set_as_tsv_file_check' => 'required',
 );
 
-sub _build_valid_methods
-{
-    my($self) = @_;
-    my $methods = {
+our %sync_methods = (
         'excel_file_to_model' => 1,
         'sbml_file_to_model' => 1,
         'tsv_file_to_model' => 1,
@@ -116,7 +217,149 @@ sub _build_valid_methods
         'phenotype_simulation_set_to_tsv_file' => 1,
         'export_phenotype_simulation_set_as_excel_file' => 1,
         'export_phenotype_simulation_set_as_tsv_file' => 1,
-        'status' => 1,
+);
+
+our %async_run_methods = (
+        'excel_file_to_model_async' => 'FBAFileUtil.excel_file_to_model',
+        'sbml_file_to_model_async' => 'FBAFileUtil.sbml_file_to_model',
+        'tsv_file_to_model_async' => 'FBAFileUtil.tsv_file_to_model',
+        'model_to_excel_file_async' => 'FBAFileUtil.model_to_excel_file',
+        'model_to_sbml_file_async' => 'FBAFileUtil.model_to_sbml_file',
+        'model_to_tsv_file_async' => 'FBAFileUtil.model_to_tsv_file',
+        'export_model_as_excel_file_async' => 'FBAFileUtil.export_model_as_excel_file',
+        'export_model_as_tsv_file_async' => 'FBAFileUtil.export_model_as_tsv_file',
+        'export_model_as_sbml_file_async' => 'FBAFileUtil.export_model_as_sbml_file',
+        'fba_to_excel_file_async' => 'FBAFileUtil.fba_to_excel_file',
+        'fba_to_tsv_file_async' => 'FBAFileUtil.fba_to_tsv_file',
+        'export_fba_as_excel_file_async' => 'FBAFileUtil.export_fba_as_excel_file',
+        'export_fba_as_tsv_file_async' => 'FBAFileUtil.export_fba_as_tsv_file',
+        'tsv_file_to_media_async' => 'FBAFileUtil.tsv_file_to_media',
+        'excel_file_to_media_async' => 'FBAFileUtil.excel_file_to_media',
+        'media_to_tsv_file_async' => 'FBAFileUtil.media_to_tsv_file',
+        'media_to_excel_file_async' => 'FBAFileUtil.media_to_excel_file',
+        'export_media_as_excel_file_async' => 'FBAFileUtil.export_media_as_excel_file',
+        'export_media_as_tsv_file_async' => 'FBAFileUtil.export_media_as_tsv_file',
+        'tsv_file_to_phenotype_set_async' => 'FBAFileUtil.tsv_file_to_phenotype_set',
+        'phenotype_set_to_tsv_file_async' => 'FBAFileUtil.phenotype_set_to_tsv_file',
+        'export_phenotype_set_as_tsv_file_async' => 'FBAFileUtil.export_phenotype_set_as_tsv_file',
+        'phenotype_simulation_set_to_excel_file_async' => 'FBAFileUtil.phenotype_simulation_set_to_excel_file',
+        'phenotype_simulation_set_to_tsv_file_async' => 'FBAFileUtil.phenotype_simulation_set_to_tsv_file',
+        'export_phenotype_simulation_set_as_excel_file_async' => 'FBAFileUtil.export_phenotype_simulation_set_as_excel_file',
+        'export_phenotype_simulation_set_as_tsv_file_async' => 'FBAFileUtil.export_phenotype_simulation_set_as_tsv_file',
+);
+
+our %async_check_methods = (
+        'excel_file_to_model_check' => 'FBAFileUtil.excel_file_to_model',
+        'sbml_file_to_model_check' => 'FBAFileUtil.sbml_file_to_model',
+        'tsv_file_to_model_check' => 'FBAFileUtil.tsv_file_to_model',
+        'model_to_excel_file_check' => 'FBAFileUtil.model_to_excel_file',
+        'model_to_sbml_file_check' => 'FBAFileUtil.model_to_sbml_file',
+        'model_to_tsv_file_check' => 'FBAFileUtil.model_to_tsv_file',
+        'export_model_as_excel_file_check' => 'FBAFileUtil.export_model_as_excel_file',
+        'export_model_as_tsv_file_check' => 'FBAFileUtil.export_model_as_tsv_file',
+        'export_model_as_sbml_file_check' => 'FBAFileUtil.export_model_as_sbml_file',
+        'fba_to_excel_file_check' => 'FBAFileUtil.fba_to_excel_file',
+        'fba_to_tsv_file_check' => 'FBAFileUtil.fba_to_tsv_file',
+        'export_fba_as_excel_file_check' => 'FBAFileUtil.export_fba_as_excel_file',
+        'export_fba_as_tsv_file_check' => 'FBAFileUtil.export_fba_as_tsv_file',
+        'tsv_file_to_media_check' => 'FBAFileUtil.tsv_file_to_media',
+        'excel_file_to_media_check' => 'FBAFileUtil.excel_file_to_media',
+        'media_to_tsv_file_check' => 'FBAFileUtil.media_to_tsv_file',
+        'media_to_excel_file_check' => 'FBAFileUtil.media_to_excel_file',
+        'export_media_as_excel_file_check' => 'FBAFileUtil.export_media_as_excel_file',
+        'export_media_as_tsv_file_check' => 'FBAFileUtil.export_media_as_tsv_file',
+        'tsv_file_to_phenotype_set_check' => 'FBAFileUtil.tsv_file_to_phenotype_set',
+        'phenotype_set_to_tsv_file_check' => 'FBAFileUtil.phenotype_set_to_tsv_file',
+        'export_phenotype_set_as_tsv_file_check' => 'FBAFileUtil.export_phenotype_set_as_tsv_file',
+        'phenotype_simulation_set_to_excel_file_check' => 'FBAFileUtil.phenotype_simulation_set_to_excel_file',
+        'phenotype_simulation_set_to_tsv_file_check' => 'FBAFileUtil.phenotype_simulation_set_to_tsv_file',
+        'export_phenotype_simulation_set_as_excel_file_check' => 'FBAFileUtil.export_phenotype_simulation_set_as_excel_file',
+        'export_phenotype_simulation_set_as_tsv_file_check' => 'FBAFileUtil.export_phenotype_simulation_set_as_tsv_file',
+);
+
+sub _build_valid_methods
+{
+    my($self) = @_;
+    my $methods = {
+        'excel_file_to_model' => 1,
+        'excel_file_to_model_async' => 1,
+        'excel_file_to_model_check' => 1,
+        'sbml_file_to_model' => 1,
+        'sbml_file_to_model_async' => 1,
+        'sbml_file_to_model_check' => 1,
+        'tsv_file_to_model' => 1,
+        'tsv_file_to_model_async' => 1,
+        'tsv_file_to_model_check' => 1,
+        'model_to_excel_file' => 1,
+        'model_to_excel_file_async' => 1,
+        'model_to_excel_file_check' => 1,
+        'model_to_sbml_file' => 1,
+        'model_to_sbml_file_async' => 1,
+        'model_to_sbml_file_check' => 1,
+        'model_to_tsv_file' => 1,
+        'model_to_tsv_file_async' => 1,
+        'model_to_tsv_file_check' => 1,
+        'export_model_as_excel_file' => 1,
+        'export_model_as_excel_file_async' => 1,
+        'export_model_as_excel_file_check' => 1,
+        'export_model_as_tsv_file' => 1,
+        'export_model_as_tsv_file_async' => 1,
+        'export_model_as_tsv_file_check' => 1,
+        'export_model_as_sbml_file' => 1,
+        'export_model_as_sbml_file_async' => 1,
+        'export_model_as_sbml_file_check' => 1,
+        'fba_to_excel_file' => 1,
+        'fba_to_excel_file_async' => 1,
+        'fba_to_excel_file_check' => 1,
+        'fba_to_tsv_file' => 1,
+        'fba_to_tsv_file_async' => 1,
+        'fba_to_tsv_file_check' => 1,
+        'export_fba_as_excel_file' => 1,
+        'export_fba_as_excel_file_async' => 1,
+        'export_fba_as_excel_file_check' => 1,
+        'export_fba_as_tsv_file' => 1,
+        'export_fba_as_tsv_file_async' => 1,
+        'export_fba_as_tsv_file_check' => 1,
+        'tsv_file_to_media' => 1,
+        'tsv_file_to_media_async' => 1,
+        'tsv_file_to_media_check' => 1,
+        'excel_file_to_media' => 1,
+        'excel_file_to_media_async' => 1,
+        'excel_file_to_media_check' => 1,
+        'media_to_tsv_file' => 1,
+        'media_to_tsv_file_async' => 1,
+        'media_to_tsv_file_check' => 1,
+        'media_to_excel_file' => 1,
+        'media_to_excel_file_async' => 1,
+        'media_to_excel_file_check' => 1,
+        'export_media_as_excel_file' => 1,
+        'export_media_as_excel_file_async' => 1,
+        'export_media_as_excel_file_check' => 1,
+        'export_media_as_tsv_file' => 1,
+        'export_media_as_tsv_file_async' => 1,
+        'export_media_as_tsv_file_check' => 1,
+        'tsv_file_to_phenotype_set' => 1,
+        'tsv_file_to_phenotype_set_async' => 1,
+        'tsv_file_to_phenotype_set_check' => 1,
+        'phenotype_set_to_tsv_file' => 1,
+        'phenotype_set_to_tsv_file_async' => 1,
+        'phenotype_set_to_tsv_file_check' => 1,
+        'export_phenotype_set_as_tsv_file' => 1,
+        'export_phenotype_set_as_tsv_file_async' => 1,
+        'export_phenotype_set_as_tsv_file_check' => 1,
+        'phenotype_simulation_set_to_excel_file' => 1,
+        'phenotype_simulation_set_to_excel_file_async' => 1,
+        'phenotype_simulation_set_to_excel_file_check' => 1,
+        'phenotype_simulation_set_to_tsv_file' => 1,
+        'phenotype_simulation_set_to_tsv_file_async' => 1,
+        'phenotype_simulation_set_to_tsv_file_check' => 1,
+        'export_phenotype_simulation_set_as_excel_file' => 1,
+        'export_phenotype_simulation_set_as_excel_file_async' => 1,
+        'export_phenotype_simulation_set_as_excel_file_check' => 1,
+        'export_phenotype_simulation_set_as_tsv_file' => 1,
+        'export_phenotype_simulation_set_as_tsv_file_async' => 1,
+        'export_phenotype_simulation_set_as_tsv_file_check' => 1,
+        'version' => 1,
     };
     return $methods;
 }
@@ -354,7 +597,36 @@ sub call_method {
         }
 	
         my $err;
+        my $async_err;
         eval {
+            my $job_srv_cl;
+            my $job_id;
+            my $cli = $self->_plack_req_header("CLI");
+            if (exists($async_run_methods{$method})) {
+                my $orig_full_method = $async_run_methods{$method};
+                my %run_job_params = (
+                    "method" => $orig_full_method,
+                    "params" => $data->{arguments}
+                );
+                $job_srv_cl = JobServiceClient->new();
+                $job_id = $job_srv_cl->run_method($self->config, $ctx->token, "run_job", \%run_job_params);
+                @result = ($job_id);
+            } elsif (exists($async_check_methods{$method})) {
+                $job_id = $data->{arguments}->[0];
+                $job_srv_cl = JobServiceClient->new();
+                my $job_state = $job_srv_cl->run_method($self->config, $ctx->token, "check_job", $job_id);
+                if ($job_state->{"finished"} != 0 and exists($job_state->{"error"})) {
+                    my $remote_err = $job_state->{"error"};
+                    $async_err = {
+                            code => -32603, # perl error from RPC::Any::Exception
+                            message => $remote_err->{message},
+                            data => $remote_err->{error}
+                           };
+                } else {
+                    @result = ($job_state);
+                }
+            } elsif ($cli || exists($sync_methods{$method}) || 
+                !exists($async_run_methods{$method . "_async"})) {
             $self->log($Bio::KBase::Log::INFO, $ctx, "start method", $tag);
             local $SIG{__WARN__} = sub {
                 my($msg) = @_;
@@ -364,7 +636,14 @@ sub call_method {
 
             @result = $module->$method(@{ $data->{arguments} });
             $self->log($Bio::KBase::Log::INFO, $ctx, "end method", $tag);
+            } else {
+                die "Method ".$method." cannot be run synchronously";
+            }
         };
+        if (defined($async_err)) {
+            $async_err->{context} = $ctx;
+            die $async_err;
+        }
 
         if ($@)
         {
@@ -455,6 +734,10 @@ sub get_method
 	Class::MOP::load_class($module);
     }
 
+    if (exists($async_run_methods{$method}) or exists($async_check_methods{$method})) {
+        return { module => $module, method => $method, modname => $package };
+    }
+    
     if (!$module->can($method)) {
 	$self->exception('NoSuchMethod',
 			 "There is no method named '$method' in the"
@@ -781,6 +1064,95 @@ sub text_value
     }
 }
 
+package JobServiceClient;
+use base 'JSON::RPC::Client';
+use POSIX;
+use strict;
+
+sub run_method {
+    my($self, $config, $token, $method_name, @args) = @_;
+    $self->{token} = $token;
+    my $url = $ENV{'KB_JOB_SERVICE_URL'};
+    if (!defined($url)) {
+        $url = $config->{"job-service-url"};
+        if (!defined($url)) {
+            Bio::KBase::Exceptions::KBaseException->throw(
+                error => "Neither 'job-service-url' parameter is defined in " .
+                    "configuration nor 'KB_JOB_SERVICE_URL' variable is defined in system", 
+                method_name => $method_name);
+        }
+    }
+    my @headers = ();
+    my $result = $self->call($url, \@headers, {
+        method => "KBaseJobService." . $method_name,
+        params => \@args,
+    });
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => $method_name,
+                           data => $result->content->{error}->{error});
+        } else {
+            return $result->result->[0];
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method " . $method_name,
+                        status_line => $self->status_line,
+                        method_name => $method_name);
+    }
+}
+
+sub call {
+    my ($self, $uri, $headers, $obj) = @_;
+    my $result;
+    {
+        if ($uri =~ /\?/) {
+            $result = $self->_get($uri);
+        } else {
+            Carp::croak "not hashref." unless (ref $obj eq 'HASH');
+            $result = $self->_post($uri, $headers, $obj);
+        }
+    }
+    my $service = $obj->{method} =~ /^system\./ if ( $obj );
+    $self->status_line($result->status_line);
+    if ($result->is_success) {
+        return unless($result->content); # notification?
+        if ($service) {
+            return JSON::RPC::ServiceObject->new($result, $self->json);
+        }
+        return JSON::RPC::ReturnObject->new($result, $self->json);
+    } elsif ($result->content_type eq 'application/json') {
+        return JSON::RPC::ReturnObject->new($result, $self->json);
+    } else {
+        return;
+    }
+}
+
+sub _post {
+    my ($self, $uri, $headers, $obj) = @_;
+    my $json = $self->json;
+    $obj->{version} ||= $self->{version} || '1.1';
+    if ($obj->{version} eq '1.0') {
+        delete $obj->{version};
+        if (exists $obj->{id}) {
+            $self->id($obj->{id}) if ($obj->{id}); # if undef, it is notification.
+        } else {
+            $obj->{id} = $self->id || ($self->id('JSON::RPC::Client'));
+        }
+    } else {
+        $obj->{id} = (defined $self->id) ? $self->id : substr(rand(),2);
+    }
+    my $content = $json->encode($obj);
+    $self->ua->post(
+        $uri,
+        Content_Type   => $self->{content_type},
+        Content        => $content,
+        Accept         => 'application/json',
+        @$headers,
+        ($self->{token} ? (Authorization => $self->{token}) : ())
+    );
+}
 
 unless (caller) {
     my($input_file,$output_file,$token) = @ARGV;
